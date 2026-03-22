@@ -23,6 +23,14 @@ struct State //структрура вектор состояния тела
     State(double x = 0, double y = 0, double vx = 0, double vy = 0, double t = 0)
         : x(x), y(y), vx(vx), vy(vy), t(t) {
     }
+    State operator+ (const State& S) const
+    {
+        return State(x + S.x, y + S.y, vx + S.vx, vy + S.vy, t + S.t);
+    }
+    State operator* (double scalar)
+    {
+        x*scalar, y*scalar, vx*scalar, vy*scalar, t*scalar;
+    }
 };
 
 class Cosmic_bodies;
@@ -60,9 +68,9 @@ public:
             double ry = y - m.y;
             double r = sqrt(rx * rx + ry * ry);
             //проверка на 0
-            if (r < 1e-10 ){
-                total_gx += 0 ;
-                total_gy += 0 ;
+            if (r < 1e-10) {
+                total_gx += 0;
+                total_gy += 0;
             }
             else {
                 total_gx -= G * m.mass * rx / (r * r * r);
@@ -90,6 +98,7 @@ public:
     Cosmic_bodies(double m, double x0, double y0, double vx0, double vy0)
         : mass(m), pos(x0, y0), vel(vx0, vy0) {
     }
+    Cosmic_bodies() {};
     virtual ~Cosmic_bodies() {}
     double getMass() const { return mass; }
     double getX() const { return pos.x; }
@@ -102,53 +111,34 @@ public:
         Gravity_field::Point g = field.calculating_field(s.x, s.y);
         return State(s.vx, s.vy, g.gx, g.gy, 1.0);
     }
+
+
     //метод обновления положения. Считаем следущие значения с помощью рк45
     virtual void update(double dt, double t, const Gravity_field& field)
-{
-    State current(pos.x, pos.y, vel.x, vel.y, t);
-    
-    // k1 = f(current)
-    State k1 = derivatives(current, t, field);
-    
-    // k2 = f(current + dt/2 * k1)
-    State y2 = {
-        current.x + dt/2 * k1.x,      // позиция x + dt/2 * vx
-        current.y + dt/2 * k1.y,      // позиция y + dt/2 * vy
-        current.vx + dt/2 * k1.vx,    // скорость vx + dt/2 * ax
-        current.vy + dt/2 * k1.vy,     // скорость vy + dt/2 * ay
-        t + dt/2
-    };
-    State k2 = derivatives(y2, t + dt/2, field);
-    
-    // k3 = f(current + dt/2 * k2)
-    State y3 = {
-        current.x + dt/2 * k2.x,
-        current.y + dt/2 * k2.y,
-        current.vx + dt/2 * k2.vx,
-        current.vy + dt/2 * k2.vy,
-        t + dt/2
-    };
-    State k3 = derivatives(y3, t + dt/2, field);
-    
-    // k4 = f(current + dt * k3)
-    State y4 = {
-        current.x + dt * k3.x,
-        current.y + dt * k3.y,
-        current.vx + dt * k3.vx,
-        current.vy + dt * k3.vy,
-        t + dt
-    };
-    State k4 = derivatives(y4, t + dt, field);
-    
-    
-    pos.x = current.x + (dt/6) * (k1.x + 2*k2.x + 2*k3.x + k4.x);
-    pos.y = current.y + (dt/6) * (k1.y + 2*k2.y + 2*k3.y + k4.y);
-    vel.x = current.vx + (dt/6) * (k1.vx + 2*k2.vx + 2*k3.vx + k4.vx);
-    vel.y = current.vy + (dt/6) * (k1.vy + 2*k2.vy + 2*k3.vy + k4.vy);
-}
+    {
+        State current(pos.x, pos.y, vel.x, vel.y, t);
+
+        // k1 = f(current)
+        State k1 = derivatives(current, t, field);
+        // k2 = f(current + dt/2 * k1)
+        State y2 = current + k1 * (dt/2);
+        State k2 = derivatives(y2, t + dt / 2, field);
+        // k3 = f(current + dt/2 * k2)
+        State y3 = current + k2 * (dt / 2);
+        State k3 = derivatives(y3, t + dt / 2, field);
+        // k4 = f(current + dt * k3)
+        State y4 = current + k3 * dt;
+        State k4 = derivatives(y4, t + dt, field);
+
+
+        pos.x = current.x + (dt / 6) * (k1.x + 2 * k2.x + 2 * k3.x + k4.x);
+        pos.y = current.y + (dt / 6) * (k1.y + 2 * k2.y + 2 * k3.y + k4.y);
+        vel.x = current.vx + (dt / 6) * (k1.vx + 2 * k2.vx + 2 * k3.vx + k4.vx);
+        vel.y = current.vy + (dt / 6) * (k1.vy + 2 * k2.vy + 2 * k3.vy + k4.vy);
+    }
 };
 
-void Gravity_field :: pos_update(const vector<Cosmic_bodies*>& bodies)
+void Gravity_field::pos_update(const vector<Cosmic_bodies*>& bodies)
 {
     masses.clear();
     for (auto body : bodies)
@@ -160,8 +150,14 @@ void Gravity_field :: pos_update(const vector<Cosmic_bodies*>& bodies)
 
 class Planet : public Cosmic_bodies
 {
+private:
+    double R;
 public:
-    Planet(double m, double x, double y, double vx, double vy) : Cosmic_bodies(m, x, y, vx, vy) {}
+    Planet(double m, double x, double y, double vx, double vy, double r) : Cosmic_bodies(m, x, y, vx, vy) { R = r; }
+    double first_velocity(Planet& planet, double h) //h - орбита заданной высоты
+    {
+        return sqrt(G * (planet.mass) / (planet.R + h));
+    }
 };
 
 
@@ -182,13 +178,13 @@ public:
 class  Earth : public Planet
 {
 public:
-    Earth(double x, double y, double vx, double vy, double m = 5.9722e24) : Planet(m, x, y, vx, vy) {};
+    Earth(double x, double y, double vx, double vy, double m = 5.9722e24, double r = 6371302) : Planet(m, x, y, vx, vy, r) {};
 };
 
 class Mars : public Planet
 {
 public:
-    Mars(double x, double y, double vx, double vy, double m = 6.4171e23) : Planet(m, x, y, vx, vy) {};
+    Mars(double x, double y, double vx, double vy, double m = 6.4171e23, double r = 3389500) : Planet(m, x, y, vx, vy, r) {};
 };
 
 
@@ -205,38 +201,37 @@ void CSV(const string& filename, const vector<double>& times, const vector<doubl
     cout << "Файл " << filename << " успешно создан\n";
 }
 
-int main() {
+int main() 
+{
+    setlocale(LC_ALL, "Russian");
     //объявляем классы планет,
     Sun sun;
     Earth earth(1.496e11, 0, 0, 29800);
     Mars mars(2.279e11, 0, 0, 24100);
     // и вектора для хранения указателей на эти классы
-    vector<Cosmic_bodies*> bodies = {&sun, &earth, &mars};
+    vector<Cosmic_bodies*> bodies = { &sun, &earth, &mars };
     Gravity_field field;
 
     // Для хранения траекторий
     vector<double> times, earth_x, earth_y, mars_x, mars_y;
-    
+
     double dt = 24 * 3600;
     double days = 687;
-    
-    for (int day = 0; day <= days; day++){
+
+    for (int day = 0; day <= days; day++) {
         times.push_back(day);
         earth_x.push_back(earth.getX());
         earth_y.push_back(earth.getY());
         mars_x.push_back(mars.getX());
         mars_y.push_back(mars.getY());
-        
+
         field.pos_update(bodies);
         earth.update(dt, day * dt, field);
         mars.update(dt, day * dt, field);
     }
-    
 
     CSV("../data/earth_orbit.csv", times, earth_x, earth_y);
     CSV("../data/mars_orbit.csv", times, mars_x, mars_y);
-    
+
     return 0;
 }
-
-
