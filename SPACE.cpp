@@ -27,9 +27,9 @@ struct State //структрура вектор состояния тела
     {
         return State(x + S.x, y + S.y, vx + S.vx, vy + S.vy, t + S.t);
     }
-    State operator* (double scalar)
+    State operator* (double scalar) const
     {
-        x*scalar, y*scalar, vx*scalar, vy*scalar, t*scalar;
+        return State(x*scalar, y*scalar, vx*scalar, vy*scalar, t*scalar);
     }
 };
 
