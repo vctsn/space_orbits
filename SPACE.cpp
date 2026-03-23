@@ -217,26 +217,29 @@ int main() {
     // Для хранения траекторий
     vector<double> times, earth_x, earth_y, mars_x, mars_y;
     
-    double dt = 24 * 3600;
-    double days = 687;
+    double dt = 60*60;                    
+    double total_seconds = 2 * 687 * 24 * 3600; 
+    long long int steps = total_seconds / dt;       // количество шагов
     
-    for (int day = 0; day <= days; day++){
-        times.push_back(day);
-        earth_x.push_back(earth.getX());
-        earth_y.push_back(earth.getY());
-        mars_x.push_back(mars.getX());
-        mars_y.push_back(mars.getY());
-        
+    for (double ct = 0, lt=0; ct< total_seconds; ct+=dt)
+    {
+        if (ct-lt>24*3600)
+        {
+            times.push_back(ct);
+            earth_x.push_back(earth.getX());
+            earth_y.push_back(earth.getY());
+            mars_x.push_back(mars.getX());
+            mars_y.push_back(mars.getY());
+            lt=ct;
+        }
         field.pos_update(bodies);
-        earth.update(dt, day * dt, field);
-        mars.update(dt, day * dt, field);
+        earth.update(dt, ct, field);
+        field.pos_update(bodies);
+        mars.update(dt, ct, field);
     }
-    
-
     CSV("../data/earth_orbit.csv", times, earth_x, earth_y);
     CSV("../data/mars_orbit.csv", times, mars_x, mars_y);
     
     return 0;
 }
-
 
