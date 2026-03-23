@@ -219,7 +219,6 @@ int main() {
     
     double dt = 360*60;                    
     double total_seconds = 2 * 687 * 24 * 3600; 
-    long long int steps = total_seconds / dt;       // количество шагов
     
     for (double ct = 0, lt=0; ct< total_seconds; ct+=dt)
     {
