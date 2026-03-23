@@ -217,7 +217,7 @@ int main() {
     // Для хранения траекторий
     vector<double> times, earth_x, earth_y, mars_x, mars_y;
     
-    double dt = 60*60;                    
+    double dt = 360*60;                    
     double total_seconds = 2 * 687 * 24 * 3600; 
     long long int steps = total_seconds / dt;       // количество шагов
     
