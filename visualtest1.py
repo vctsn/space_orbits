@@ -2,8 +2,8 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 # Читаем данные
-earth = pd.read_csv('data/earth_orbit.csv')
-mars = pd.read_csv('data/mars_orbit.csv')
+earth = pd.read_csv('build/earth_orbit.csv')
+mars = pd.read_csv('build/mars_orbit.csv')
 
 # Рисуем
 plt.figure(figsize=(10, 10))

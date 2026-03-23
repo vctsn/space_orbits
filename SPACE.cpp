@@ -217,7 +217,7 @@ int main() {
     // Для хранения траекторий
     vector<double> times, earth_x, earth_y, mars_x, mars_y;
     
-    double dt = 360*60;                    
+    double dt = 60*10000;                    
     double total_seconds = 2 * 687 * 24 * 3600; 
     
     for (double ct = 0, lt=0; ct< total_seconds; ct+=dt)
@@ -233,7 +233,6 @@ int main() {
         }
         field.pos_update(bodies);
         earth.update(dt, ct, field);
-        field.pos_update(bodies);
         mars.update(dt, ct, field);
     }
     CSV("../data/earth_orbit.csv", times, earth_x, earth_y);
