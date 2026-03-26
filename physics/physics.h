@@ -5,7 +5,6 @@
 #include <vector>
 #include <cmath>
 #include <string>
-#include <fstream>
 
 using std::cout;
 using std::endl;
@@ -100,10 +99,5 @@ class Mars : public Planet {
 public:
     Mars(double x, double y, double vx, double vy, double m = 6.4171e23);
 };
-
-// Функция для сохранения траекторий в CSV файл
-// ее нужно перенести в движок
-void CSV(const string& filename, const vector<double>& times, 
-         const vector<double>& x, const vector<double>& y);
 
 #endif 

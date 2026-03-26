@@ -1,0 +1,1 @@
+Команда для сборки всего чуда g++ -o build/simulation main.cpp engine/engine.cpp physics/physics.cpp

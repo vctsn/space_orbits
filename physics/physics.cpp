@@ -1,13 +1,16 @@
 ﻿#include "physics.h"
 
-// 
+// объявляем константы 
 const double Msun = 1.98847e30;
 const double G = 6.67430e-11;
 
-
+// структура состояния
 State::State(double x, double y, double vx, double vy, double t)
     : x(x), y(y), vx(vx), vy(vy), t(t) {}
 
+
+
+//реализация гравитационного поля    
 Gravity_field::Mass::Mass(double x, double y, double m) : x(x), y(y), mass(m) {}
 
 
@@ -49,7 +52,9 @@ void Gravity_field::pos_update(const vector<Cosmic_bodies*>& bodies) {
     update_from_bodies(bodies);
 }
 
-// Реализация Cosmic_bodies
+
+
+// реализация космических тел
 Cosmic_bodies::Cosmic_bodies() : mass(0), pos_x(0), pos_y(0), vel_x(0), vel_y(0) {}
 
 Cosmic_bodies::Cosmic_bodies(double m, double x0, double y0, double vx0, double vy0)
@@ -104,22 +109,3 @@ Earth::Earth(double x, double y, double vx, double vy, double m)
 Mars::Mars(double x, double y, double vx, double vy, double m) 
     : Planet(m, x, y, vx, vy) {}
 
-
-
-
-
-// Реализация CSV
-void CSV(const string& filename, const vector<double>& times, 
-         const vector<double>& x, const vector<double>& y) {
-    ofstream file(filename);
-    if (file.is_open()) {
-        file << "t,x,y\n";
-        for (size_t i = 0; i < times.size(); i++) {
-            file << times[i] << "," << x[i] << "," << y[i] << "\n";
-        }
-        file.close();
-        cout << "Файл " << filename << " успешно создан\n";
-    } else {
-        cout << "Ошибка при создании файла " << filename << endl;
-    }
-}
