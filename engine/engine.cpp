@@ -5,6 +5,14 @@
 
 using namespace std;
 
+# define R_earth  1.496e11
+# define M_earth 5.9722e24
+
+# define R_mars  2.279e11
+# define M_mars 6.4171e27
+
+
+
 SimulationEngine::SimulationEngine() 
     : dt_(1800), total_seconds_(2 * 687 * 24 * 3600) {}
 
@@ -18,11 +26,11 @@ void SimulationEngine::setup() {
     // Создаем тела
     bodies_.push_back(new Sun());
     
-    double v_earth = sqrt(G * Msun / 1.496e11);
-    double v_mars = sqrt(G * Msun / 2.279e11);
+    double v_earth = sqrt(G * Msun / R_earth );
+    double v_mars = sqrt(G * Msun / R_mars);
     
-    bodies_.push_back(new Earth(1.496e11, 0, 0, v_earth));
-    bodies_.push_back(new Mars(2.279e11, 0, 0, v_mars));
+    bodies_.push_back(new Earth(R_earth, 0, 0, v_earth, M_earth));
+    bodies_.push_back(new Mars(R_mars, 0, 0, v_mars, M_mars));
     
     cout << "Солнечная система настроена" << endl;
 }

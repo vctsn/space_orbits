@@ -92,12 +92,12 @@ public:
 
 class Earth : public Planet {
 public:
-    Earth(double x, double y, double vx, double vy, double m = 5.9722e24);
+    Earth(double x, double y, double vx, double vy, double m);
 };
 
 class Mars : public Planet {
 public:
-    Mars(double x, double y, double vx, double vy, double m = 6.4171e23);
+    Mars(double x, double y, double vx, double vy, double m);
 };
 
 #endif 

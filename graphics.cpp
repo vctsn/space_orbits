@@ -15,10 +15,10 @@ class Graphic_object
 protected:
     sf::Color color;
     double scale = 1;
-    Point Centre{ 600, 300 }; //центр окна
+    Point Centre{ 600, 300 }; //пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
 public:
     Graphic_object () {}
-    virtual void Draw(sf::RenderWindow& window) = 0; //метод отрисовки траектории 
+    virtual void Draw(sf::RenderWindow& window) = 0; //пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ 
 };
 
 class Sun : public Graphic_object
@@ -41,12 +41,12 @@ protected:
     sf::Time pause = sf::milliseconds(10);
     vector<Point> trajectory;
     sf::Clock animation_clock;
-    int current_index = 0; //хранит текущее положение (текущую точку)
+    int current_index = 0; //пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ (пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ)
 public:
     Planet(std::ifstream& file)
     {
         std::string header;
-        std::getline(file, header); //пропускаем заголовок
+        std::getline(file, header); //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
         double t, x, y;
         char comma;
         while (file >> t >> comma >> x >> comma >> y)
@@ -92,11 +92,11 @@ int main()
 {
     setlocale(LC_ALL, "Russian");
 
-    std::ifstream file1("C:\\Users\\1\\Desktop\\project\\space_orbits\\data\\earth_orbit.csv");
-    if (!file1.is_open()) { std::cout << "Не удалось открыть file1"; }
+    std::ifstream file1("../data/earth_orbit.csv");
+    if (!file1.is_open()) { std::cout << "РѕС€РёР±РєР° РѕС‚РєСЂС‹С‚РёСЏ С„Р°Р№Р»Р°(1)"; }
 
-    std::ifstream file2("C:\\Users\\1\\Desktop\\project\\space_orbits\\data\\mars_orbit.csv");
-    if (!file2.is_open()) { std::cout << "Не удалось открыть file2"; }
+    std::ifstream file2("../data/mars_orbit.csv");
+    if (!file2.is_open()) { std::cout << "РѕС€РёР±РєР° РѕС‚РєСЂС‹С‚РёСЏ С„Р°Р№Р»Р°(2)"; }
 
     Earth earth(file1);
     Mars mars(file2);
