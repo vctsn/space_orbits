@@ -14,7 +14,7 @@ class Graphic_object
 {
 protected:
     sf::Color color;
-    double scale = 1e-9;
+    double scale = 1;
     Point Centre{ 600, 300 }; //центр окна
 public:
     Graphic_object () {}
@@ -92,10 +92,10 @@ int main()
 {
     setlocale(LC_ALL, "Russian");
 
-    std::ifstream file1("C:\\Users\\1\\source\\repos\\SPACE\\data\\earth_orbit.csv");
+    std::ifstream file1("C:\\Users\\1\\Desktop\\project\\space_orbits\\data\\earth_orbit.csv");
     if (!file1.is_open()) { std::cout << "Не удалось открыть file1"; }
 
-    std::ifstream file2("C:\\Users\\1\\source\\repos\\SPACE\\data\\mars_orbit.csv");
+    std::ifstream file2("C:\\Users\\1\\Desktop\\project\\space_orbits\\data\\mars_orbit.csv");
     if (!file2.is_open()) { std::cout << "Не удалось открыть file2"; }
 
     Earth earth(file1);
