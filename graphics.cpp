@@ -1,4 +1,5 @@
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 #include <vector>
 #include <fstream>
 #include <iostream>
@@ -14,24 +15,17 @@ class Graphic_object
 {
 protected:
     sf::Color color;
-    Point Centre{ 600, 300 }; //центр окна
+    double scale = 1;
+    Point Centre{ 600, 300 }; //пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
 public:
     Graphic_object () {}
-    virtual void Draw(sf::RenderWindow& window) = 0; //метод отрисовки траектории 
-    virtual void Resize()
-    {
-        Centre.x *= sf::VideoMode::getDesktopMode().width / 1200;
-        Centre.y *= sf::VideoMode::getDesktopMode().height / 600;
-    }
+    virtual void Draw(sf::RenderWindow& window) = 0; //пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ 
 };
 
 class Sun : public Graphic_object
 {
 public:
-    Sun() 
-    { 
-        color = sf::Color::Yellow; 
-    }
+    Sun() { color = sf::Color::Yellow; }
     void Draw(sf::RenderWindow& window)
     {
         sf::CircleShape Sun(10);
@@ -40,7 +34,6 @@ public:
         Sun.setFillColor(color);
         window.draw(Sun);
     }
-    void Resize() { Graphic_object::Resize(); }
 };
 
 class Planet : public Graphic_object
@@ -49,12 +42,12 @@ protected:
     sf::Time pause = sf::milliseconds(10);
     vector<Point> trajectory;
     sf::Clock animation_clock;
-    int current_index = 0; //хранит текущее положение (текущую точку)
+    int current_index = 0; //пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ (пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ)
 public:
     Planet(std::ifstream& file)
     {
         std::string header;
-        std::getline(file, header); //пропускаем заголовок
+        std::getline(file, header); //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
         double t, x, y;
         char comma;
         while (file >> t >> comma >> x >> comma >> y)
@@ -73,33 +66,13 @@ public:
             animation_clock.restart();
         }
     }
-    void DrawFullTrajectory(sf::RenderWindow& window)
-    {
-        for (int i = 0; i < current_index; i++)
-        {
-            sf::CircleShape p(1);
-            p.setFillColor(color);
-            p.setPosition(sf::Vector2f(trajectory[i].x + Centre.x, trajectory[i].y + Centre.y));
-            p.setOrigin(1, 1);
-            window.draw(p);
-        }
-    }
     void Draw(sf::RenderWindow& window)
     {
-        DrawFullTrajectory(window);
         sf::CircleShape p(3);
         p.setFillColor(color);
-        p.setPosition(sf::Vector2f(trajectory[current_index].x + Centre.x, trajectory[current_index].y + Centre.y));
+        p.setPosition(sf::Vector2f(trajectory[current_index].x * scale + Centre.x, trajectory[current_index].y * scale + Centre.y));
         p.setOrigin(3, 3);
         window.draw(p);
-    }
-    void Resize()
-    {
-        for (auto& p : trajectory)
-        {
-            p.x *= sf::VideoMode::getDesktopMode().width/1200;
-            p.y *= sf::VideoMode::getDesktopMode().height/600;
-        }
     }
 };
 
@@ -120,11 +93,18 @@ int main()
 {
     setlocale(LC_ALL, "Russian");
 
-    std::ifstream file1("C:\\Users\\1\\Desktop\\project\\space_orbits\\data\\earth_orbit.csv");
-    if (!file1.is_open()) { std::cout << "Не удалось открыть file1"; }
+    std::ifstream file1("../data/earth_orbit.csv");
+    if (!file1.is_open()) { std::cout << "РѕС€РёР±РєР° РѕС‚РєСЂС‹С‚РёСЏ С„Р°Р№Р»Р°(1)"; }
 
-    std::ifstream file2("C:\\Users\\1\\Desktop\\project\\space_orbits\\data\\mars_orbit.csv");
-    if (!file2.is_open()) { std::cout << "Не удалось открыть file2"; }
+    std::ifstream file2("../data/mars_orbit.csv");
+    if (!file2.is_open()) { std::cout << "РѕС€РёР±РєР° РѕС‚РєСЂС‹С‚РёСЏ С„Р°Р№Р»Р°(2)"; }
+    sf::Music music;
+    if (!music.openFromFile("/mnt/c/space_orbits-main/Smeshariki_-_Ot_vinta_48225827.mp3")) {
+        std::cout << "РћС€РёР±РєР° Р·Р°РіСЂСѓР·РєРё РјСѓР·С‹РєРё" << std::endl;
+        // РјРѕР¶РЅРѕ РїСЂРѕРґРѕР»Р¶РёС‚СЊ Р±РµР· РјСѓР·С‹РєРё
+    }
+    music.setLoop(true);      // Р·Р°С†РёРєР»РёС‚СЊ
+    music.play();
 
     Earth earth(file1);
     Mars mars(file2);
@@ -138,23 +118,17 @@ int main()
         {
             if (event.type == sf::Event::Closed)
                 window.close();
-            if (event.type == sf::Event::Resized)
-            {
-                earth.Resize();
-                mars.Resize();
-                sun.Resize();
-            }
         }
 
-        window.clear();
-        
         sun.Draw(window);
 
-        earth.Draw(window);
-        mars.Draw(window); 
-        earth.Update();
-        mars.Update();
-        
+        for (unsigned int i = 0; i < earth.Get_trajectory(); i++)
+        {
+            earth.Draw(window);
+            mars.Draw(window);
+            earth.Update();
+            mars.Update();
+        }
         window.display();
     }
 
