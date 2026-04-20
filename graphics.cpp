@@ -3,7 +3,7 @@
 #include <array>
 #include <fstream>
 #include <iostream>
-#include <windows.h>
+
 using std::vector;
 using std::array;
 
@@ -188,8 +188,7 @@ int main()
         sf::Event event;
         while (window1.pollEvent(event))
         {
-            if (event.type == sf::Event::Closed)
-                window1.close();
+            if (event.type == sf::Event::Closed) window1.close();
             if (event.type = sf::Event::MouseButtonPressed)
             {
                 if (event.mouseButton.button == sf::Mouse::Left)
