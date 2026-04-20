@@ -101,11 +101,29 @@ void Sun::update(double dt, const Gravity_field& field) {
     // Солнце неподвижно
 }
 
-// Реализация Earth
+
+//планетки)
+Mercury::Mercury(double x, double y, double vx, double vy, double m) 
+    : Planet(m, x, y, vx, vy) {}
+
+Venus::Venus(double x, double y, double vx, double vy, double m) 
+    : Planet(m, x, y, vx, vy) {}
+
 Earth::Earth(double x, double y, double vx, double vy, double m) 
     : Planet(m, x, y, vx, vy) {}
 
-// Реализация Mars
 Mars::Mars(double x, double y, double vx, double vy, double m) 
+    : Planet(m, x, y, vx, vy) {}
+
+Jupiter::Jupiter(double x, double y, double vx, double vy, double m) 
+    : Planet(m, x, y, vx, vy) {}
+
+Saturn::Saturn(double x, double y, double vx, double vy, double m) 
+    : Planet(m, x, y, vx, vy) {}
+
+Uranus::Uranus(double x, double y, double vx, double vy, double m) 
+    : Planet(m, x, y, vx, vy) {}
+
+Neptune::Neptune(double x, double y, double vx, double vy, double m) 
     : Planet(m, x, y, vx, vy) {}
 

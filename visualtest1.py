@@ -1,18 +1,27 @@
 import matplotlib.pyplot as plt
 import pandas as pd
 
-# Читаем данные
-earth = pd.read_csv('data/earth_orbit.csv')
-mars = pd.read_csv('data/mars_orbit.csv')
+# Читаем данные из общего файла
+data = pd.read_csv('data/orbits.csv')
 
 # Рисуем
-plt.figure(figsize=(10, 10))
-plt.plot(earth['x'], earth['y'], 'b-', label='Земля', linewidth=1)
-plt.plot(mars['x'], mars['y'], 'r-', label='Марс', linewidth=1)
+plt.figure(figsize=(12, 12))
+
+# Список планет
+planets = ['Mercury', 'Venus', 'Earth', 'Mars', 'Jupiter', 'Saturn', 'Uranus', 'Neptune']
+colors = ['gray', 'orange', 'blue', 'red', 'brown', 'gold', 'lightblue', 'darkblue']
+
+# Рисуем орбиту каждой планеты
+for planet, color in zip(planets, colors):
+    plt.plot(data[f'{planet}_x'], data[f'{planet}_y'], 
+             color=color, label=planet, linewidth=1)
+
+# Солнце
 plt.plot(0, 0, 'y*', markersize=20, label='Солнце')
-plt.xlabel('x (м)')
-plt.ylabel('y (м)')
-plt.title('Орбиты Земли и Марса')
+
+plt.xlabel('x (млн км)')
+plt.ylabel('y (млн км)')
+plt.title('Орбиты планет Солнечной системы')
 plt.grid(True, alpha=0.3)
 plt.legend()
 plt.axis('equal')
