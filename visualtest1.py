@@ -2,14 +2,14 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 # Читаем данные из общего файла
-data = pd.read_csv('data/orbits.csv')
+data = pd.read_csv('data/simulation.csv')
 
 # Рисуем
 plt.figure(figsize=(12, 12))
 
 # Список планет
-planets = ['Mercury', 'Venus', 'Earth', 'Mars', 'Jupiter', 'Saturn', 'Uranus', 'Neptune']
-colors = ['gray', 'orange', 'blue', 'red', 'brown', 'gold', 'lightblue', 'darkblue']
+planets = ['Mercury', 'Venus', 'Earth', 'Mars', 'Jupiter', 'Saturn', 'Uranus', 'Neptune', "sat"]
+colors = ['gray', 'orange', 'blue', 'red', 'brown', 'gold', 'lightblue', 'darkblue', 'black']
 
 # Рисуем орбиту каждой планеты
 for planet, color in zip(planets, colors):

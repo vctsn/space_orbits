@@ -90,9 +90,6 @@ void Cosmic_bodies::update(double dt, const Gravity_field& field) {
 Planet::Planet(double m, double x, double y, double vx, double vy) 
     : Cosmic_bodies(m, x, y, vx, vy) {}
 
-// Реализация Spacecraft
-Spacecraft::Spacecraft(double m, double x, double y, double vx, double vy) 
-    : Cosmic_bodies(m, x, y, vx, vy) {}
 
 // Реализация Sun
 Sun::Sun() : Cosmic_bodies(1.98847e30, 0, 0, 0, 0) {}
@@ -126,4 +123,11 @@ Uranus::Uranus(double x, double y, double vx, double vy, double m)
 
 Neptune::Neptune(double x, double y, double vx, double vy, double m) 
     : Planet(m, x, y, vx, vy) {}
+//cпутники
 
+Spacecraft::Spacecraft(double m, double x, double y, double vx, double vy) 
+    : Cosmic_bodies(m, x, y, vx, vy) {}
+
+void Spacecraft::update(double dt, const Gravity_field& field) {
+    Cosmic_bodies::update(dt, field);
+}

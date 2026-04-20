@@ -79,11 +79,6 @@ public:
     Planet(double m, double x, double y, double vx, double vy);
 };
 
-class Spacecraft : public Cosmic_bodies {
-public:
-    Spacecraft(double m, double x, double y, double vx, double vy);
-};
-
 class Sun : public Cosmic_bodies {
 public:
     Sun();
@@ -128,5 +123,11 @@ public:
 class Neptune : public Planet {
 public:
     Neptune(double x, double y, double vx, double vy, double m);
+};
+
+class Spacecraft : public Cosmic_bodies {
+public:
+    Spacecraft(double m, double x, double y, double vx, double vy);
+    void update(double dt, const Gravity_field& field) override;
 };
 #endif 

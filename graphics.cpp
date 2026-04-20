@@ -116,10 +116,10 @@ int main()
 {
     setlocale(LC_ALL, "Russian");
 
-    std::ifstream file1("C:\\Users\\1\\Desktop\\project\\space_orbits\\data\\earth_orbit.csv");
+    std::ifstream file1("../data/earth_orbit.csv");
     if (!file1.is_open()) { std::cout << "�� ������� ������� file1"; }
 
-    std::ifstream file2("C:\\Users\\1\\Desktop\\project\\space_orbits\\data\\mars_orbit.csv");
+    std::ifstream file2("../data/mars_orbit.csv");
     if (!file2.is_open()) { std::cout << "�� ������� ������� file2"; }
 
     Earth earth(file1);

@@ -32,7 +32,7 @@ using namespace std;
 
 
 SimulationEngine::SimulationEngine() 
-    : dt_(180), total_seconds_(5 * 687 * 24 * 3600*5) {}
+    : dt_(120), total_seconds_(4 * 365 * 24 * 3600) {}
 
 SimulationEngine::~SimulationEngine() {
     for (auto body : bodies_) {
@@ -84,7 +84,7 @@ void SimulationEngine::run() {
         
         // Сохраняем раз в сутки
         if (t - last_save >= 24 * 3600) {
-            times.push_back(t / (24 * 3600));            
+            times.push_back(t / (24 * 3600));             
             for (int i = 1; i < bodies_.size(); i++) {
                 planets_x[i-1].push_back(bodies_[i]->getX() / 1e9);
                 planets_y[i-1].push_back(bodies_[i]->getY() / 1e9);
@@ -106,7 +106,7 @@ void SimulationEngine::save_csv(const string& filename) {
     ofstream file(filename);
     if (file.is_open()) {
         // Заголовок
-        vector<string> planet_names = {"Mercury", "Venus", "Earth", "Mars", "Jupiter", "Saturn", "Uranus", "Neptune"};
+        vector<string> planet_names = {"Mercury", "Venus", "Earth", "Mars", "Jupiter", "Saturn", "Uranus", "Neptune", "sat"};
         file << "t";
         for (const auto& name : planet_names) {
             file << "," << name << "_x," << name << "_y";
@@ -126,4 +126,11 @@ void SimulationEngine::save_csv(const string& filename) {
     } else {
         cout << "Ошибка при создании файла " << filename << endl;
     }
+}
+
+void SimulationEngine::add_spacecraft(double mass, double x, double y, double vx, double vy) {
+    bodies_.push_back(new Spacecraft(mass, x, y, vx, vy));
+    planets_x.push_back(vector<double>());
+    planets_y.push_back(vector<double>());
+    cout << "Спутник добавлен" << endl;
 }
