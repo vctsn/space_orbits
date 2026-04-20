@@ -1,14 +1,22 @@
 #include "engine/engine.h"
-#include <iostream>
+#include "config.h"
 
 int main() {
-    SimulationEngine engine;
+    ConfigManager cfg;
+    SimulationEngine engine(cfg);
+    
     engine.setup();
     
-    engine.add_spacecraft(1000, 1.496e11*1.00001, 0, 1000, 5000); 
-    engine.run();
+    if (cfg.spacecraft_enabled()) {
+        engine.add_spacecraft(
+            cfg.spacecraft_mass(),
+            cfg.spacecraft_x(), cfg.spacecraft_y(),
+            cfg.spacecraft_vx(), cfg.spacecraft_vy()
+        );
+    }
     
-    engine.save_csv("../data/simulation.csv");
+    engine.run();
+    engine.save_csv();
     
     return 0;
 }

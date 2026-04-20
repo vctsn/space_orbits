@@ -30,9 +30,28 @@ using namespace std;
 #define R_neptune 4.495e12
 #define M_neptune 1.024e26
 
-
+// Конструктор по умолчанию
 SimulationEngine::SimulationEngine() 
-    : dt_(120), total_seconds_(4 * 365 * 24 * 3600) {}
+    : dt_(120), 
+      total_seconds_(4 * 365 * 24 * 3600),
+      save_interval_seconds_(24 * 3600),
+      output_file_("data/simulation.csv") {
+    cout << "Использованы настройки по умолчанию" << endl;
+}
+
+// Конструктор из конфига
+SimulationEngine::SimulationEngine(const ConfigManager& cfg) {
+    dt_ = cfg.dt();
+    total_seconds_ = cfg.total_days() * 24 * 3600;
+    save_interval_seconds_ = cfg.save_interval_hours() * 3600;
+    output_file_ = cfg.output_file();
+    
+    cout << "Используем конфигруацию вида" << endl;
+    cout << "Шаг по времени: " << dt_ << " секунд" << endl;
+    cout << "Всего дней " << cfg.total_days() << endl;
+    cout << "Интервал сохранения: " << cfg.save_interval_hours() << " часов" << endl;
+    cout << "Сохраняем в  " << output_file_ << endl;
+}
 
 SimulationEngine::~SimulationEngine() {
     for (auto body : bodies_) {
@@ -71,10 +90,8 @@ void SimulationEngine::setup() {
 
 void SimulationEngine::run() {
     cout << "Запуск симуляции..." << endl;
-    cout << "Шаг: " << dt_ << " сек, Время: " << total_seconds_/(24*3600) << " дней" << endl;
     
     double last_save = 0;
-
     
     planets_x.resize(bodies_.size() - 1);
     planets_y.resize(bodies_.size() - 1);    
@@ -82,8 +99,8 @@ void SimulationEngine::run() {
 
     for (double t = 0; t < total_seconds_; t += dt_) {
         
-        // Сохраняем раз в сутки
-        if (t - last_save >= 24 * 3600) {
+        // Используем save_interval_seconds_ вместо жестко заданного 24*3600
+        if (t - last_save >= save_interval_seconds_) {
             times.push_back(t / (24 * 3600));             
             for (int i = 1; i < bodies_.size(); i++) {
                 planets_x[i-1].push_back(bodies_[i]->getX() / 1e9);
@@ -103,10 +120,15 @@ void SimulationEngine::run() {
 }
 
 void SimulationEngine::save_csv(const string& filename) {
-    ofstream file(filename);
+    string actual_filename = filename.empty() ? output_file_ : filename;
+    ofstream file(actual_filename);
     if (file.is_open()) {
         // Заголовок
-        vector<string> planet_names = {"Mercury", "Venus", "Earth", "Mars", "Jupiter", "Saturn", "Uranus", "Neptune", "sat"};
+        vector<string> planet_names = {"Mercury", "Venus", "Earth", "Mars", "Jupiter", "Saturn", "Uranus", "Neptune"};
+        if (bodies_.size() > 9) {
+            planet_names.push_back("sat");
+        }
+        
         file << "t";
         for (const auto& name : planet_names) {
             file << "," << name << "_x," << name << "_y";
@@ -122,9 +144,9 @@ void SimulationEngine::save_csv(const string& filename) {
             file << "\n";
         }
         file.close();
-        cout << "Все планеты сохранены в " << filename << endl;
+        cout << "Все данные сохранены в " << actual_filename << endl;
     } else {
-        cout << "Ошибка при создании файла " << filename << endl;
+        cout << "Ошибка при создании файла " << actual_filename << endl;
     }
 }
 
@@ -132,5 +154,5 @@ void SimulationEngine::add_spacecraft(double mass, double x, double y, double vx
     bodies_.push_back(new Spacecraft(mass, x, y, vx, vy));
     planets_x.push_back(vector<double>());
     planets_y.push_back(vector<double>());
-    cout << "Спутник добавлен" << endl;
+    cout << "Спутник добавлен: Масса=" << mass << " кг, В точке (" << x/1e9 << ", " << y/1e9 << ") млн км" << endl;
 }

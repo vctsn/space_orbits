@@ -1,0 +1,12 @@
+{
+  "dt_seconds": 180,
+  "total_days": 73000,
+  "save_interval_hours": 24,
+  "output_file": "data/simulation.csv",
+  "enabled": true,
+  "mass_kg": 1000.0,
+  "pos_x": 149635786000.0,
+  "pos_y": 0.0,
+  "vx": 20000.0,
+  "vy": 30000.0
+}

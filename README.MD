@@ -3,7 +3,7 @@
 $
 
 cd ..
-g++ -o build/simulation main.cpp engine/engine.cpp physics/physics.cpp
+g++ -std=c++17 -I. -o build/simulation main.cpp engine/engine.cpp physics/physics.cpp
 cd build/
 ./simulation
 $
