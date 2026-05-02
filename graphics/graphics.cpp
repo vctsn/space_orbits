@@ -4,8 +4,6 @@
 #include <fstream>
 #include <iostream>
 
-#pragma execution_character_set("utf-8")
-
 using std::vector;
 using std::array;
 
@@ -20,10 +18,11 @@ class Graphic_object
 {
 protected:
     sf::Color color;
-    Point Centre{ sf::VideoMode::getDesktopMode().width/2.0, sf::VideoMode::getDesktopMode().height/2.0 }; //пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
+    Point Centre{ sf::VideoMode::getDesktopMode().width/2.0, sf::VideoMode::getDesktopMode().height/2.0 }; //центр окна
 public:
     Graphic_object () {}
-    virtual void Draw(sf::RenderWindow& window) = 0; //пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+    virtual void Draw(sf::RenderWindow& window) {}; //метод отрисовки траектории
+    virtual void Update() {};
 };
 
 class Sun : public Graphic_object
@@ -49,13 +48,13 @@ protected:
     sf::Time pause = sf::milliseconds(10);
     vector<Point> trajectory;
     sf::Clock animation_clock;
-    int current_index = 0; //пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ (пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ)
+    int current_index = 0; //хранит текущее положение (текущую точку)
 public:
     Planet() {};
     Planet(std::ifstream& file)
     {
         std::string header;
-        std::getline(file, header); //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+        std::getline(file, header); //пропускаем заголовок
         double t, x, y;
         char comma;
         while (file >> t >> comma >> x >> comma >> y)
@@ -108,141 +107,184 @@ public:
     Mars(std::ifstream& file) : Planet(file) { color = sf::Color::Red; }
 };
 
-struct Area //пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+
+class Window
 {
-    int x0, y0, x, y; //пїЅ0, пїЅ0 - пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ, пїЅ, пїЅ - пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
-    Planet planet; //пїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+protected:
+    sf::Font font;
+    unsigned int x_window = sf::VideoMode::getDesktopMode().width; //ширина окна
+    unsigned int y_window = sf::VideoMode::getDesktopMode().height; //высота окна
+public:
+    ~Window() {};
+    Window() 
+    {
+        //Сoздние текста
+        if (!font.loadFromFile("G.ttf"))
+            std::cout << "Ошибка при открытии файла шрифта" << std::endl;
+        else
+            std::cout << "Файл шрифта успешно загружен" << std::endl;
+    };
 };
 
-int main()
+class Menu : public Window
 {
-    setlocale(LC_ALL, "Russian");
-
-    //std::ifstream file1("C:\\Users\\1\\Desktop\\project\\space_orbits\\data\\earth_orbit.csv");
-    std::ifstream file1("../data/earth_orbit.csv");
-    if (!file1.is_open()) { std::cout << " file1"; }
-
-    //std::ifstream file2("C:\\Users\\1\\Desktop\\project\\space_orbits\\data\\mars_orbit.csv");
-    std::ifstream file2("../data/mars_orbit.csv");
-    if (!file2.is_open()) { std::cout << " file2"; }
-
-    Earth earth(file1);
-    Mars mars(file2);
-    Sun sun;
-
-    sf::RenderWindow window1(sf::VideoMode(sf::VideoMode::getDesktopMode().width, sf::VideoMode::getDesktopMode().height), L"пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ");
-
-    //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
-    sf::Texture texture;
-    texture.loadFromFile("F.jpg");
-
-    sf::Sprite sprite;
-    sprite.setTexture(texture);
-    sf::Vector2u tSize = texture.getSize();
-    sf::Vector2u wSize = window1.getSize();
-    sprite.setScale(static_cast<float> (wSize.x) / tSize.x, static_cast<float> (wSize.y) / tSize.y);
-    
-    //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
-    sf::Font font;
-    font.loadFromFile("G.ttf");
-    if (!font.loadFromFile("G.ttf")) std::cout << "пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ";
-    else std::cout << "пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ";
-
-    sf::Text text(L"пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ:", font, 80);
-    text.setFillColor(sf::Color::Black);
-    text.setPosition(100, 70);
-
-    sf::FloatRect bounds = text.getGlobalBounds();
-    sf::RectangleShape rect(sf::Vector2f(bounds.width + 20, bounds.height + 20));
-    rect.setPosition(sf::Vector2f(bounds.left - 10, bounds.top - 10));
-    rect.setFillColor(sf::Color(255, 255, 255));
-
-    vector<sf::Text> planets = {
-        sf::Text(L"пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ", font, 50),
-        sf::Text(L"пїЅпїЅпїЅпїЅпїЅпїЅ", font, 50),
-        sf::Text(L"пїЅпїЅпїЅпїЅ", font, 50),
-        sf::Text(L"пїЅпїЅпїЅпїЅпїЅпїЅ", font, 50),
-        sf::Text(L"пїЅпїЅпїЅпїЅпїЅпїЅ", font, 50),
-        sf::Text(L"пїЅпїЅпїЅпїЅ", font, 50),
-        sf::Text(L"пїЅпїЅпїЅпїЅпїЅпїЅ", font, 50),
-    };
-
-    array<Area, 7> transition; //пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅ, пїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
-
-    float startY = 100 + bounds.height + 40;
-    for (unsigned int i = 0; i < planets.size(); i++)
+private:
+    struct Area //здесь хранится облать, занимаемая текстом названия планеты
     {
-        planets[i].setFillColor(sf::Color::White);
-        int Y = startY + i * 85;
-        planets[i].setPosition(95, Y);
+        int x0, y0, x, y; //х0, у0 - левый верхний угол, х, у - правый нижний
+        int num; //число планет в системе
+    };
+    sf::RenderWindow window{ sf::VideoMode(x_window, y_window), L"Начальное меню" };
+    sf::Texture texture;
+    sf::Sprite sprite;
+    array<Area, 5> transition;
+    sf::Text text; //заголовок  
+    sf::FloatRect bounds;
+    float x_head = x_window / 15.0;
+    float y_head = y_window / 15.0;
+    sf::RectangleShape rect;
+    vector<sf::Text> button;
+public:
+    Menu()
+    {
+        //Создаем заголовок 
+        text = sf::Text(L"Выберите диапазон скоростей астероидов (км/c):", font, 60);
+        text.setFillColor(sf::Color::Black);
+        text.setPosition(x_head, y_head);
 
-        sf::FloatRect boundsP = planets[i].getGlobalBounds();
-        if (i == 2)
+        //Cоздаем рамку для заголовка 
+        bounds = text.getGlobalBounds();
+        rect = sf::RectangleShape(sf::Vector2f(bounds.width + x_head / 6.0, bounds.height + y_head / 6.0));
+        rect.setPosition(sf::Vector2f(bounds.left - x_head / 12.0, bounds.top - x_head / 12.0));
+        rect.setFillColor(sf::Color(255, 255, 255));
+
+        //Создаем кнопки
+        button = {
+            sf::Text(L"20 - 40", font, 70),
+            sf::Text(L"40 - 90", font, 70),
+            sf::Text(L"90 - 150", font, 70),
+        };
+
+        float currentX = x_head;
+        for (unsigned int i = 0; i < button.size(); i++)
         {
-            Area area{ 95, Y, 95 + boundsP.width, Y + bounds.height, mars };
-            transition[i] = area;
+            button[i].setFillColor(sf::Color::White);
+            button[i].setPosition(currentX, 3 * y_head);
+
+            sf::FloatRect boundsP = button[i].getGlobalBounds();
+            //далее заполняем параметры кнопок
+            transition[i].num = i + 1;
+            transition[i].x0 = boundsP.left;
+            transition[i].y0 = boundsP.top;
+            transition[i].x = boundsP.left + boundsP.width;
+            transition[i].y = boundsP.top + boundsP.height;
+
+            currentX += boundsP.width + 130.0f;
         }
+
+
+        //Создание фона
+        if (!texture.loadFromFile("F.jpg"))
+            std::cout << "Ошибка при открытии файла F.jpg" << std::endl;
+
+        sprite.setTexture(texture);
+        sf::Vector2u tSize = texture.getSize();
+        sf::Vector2u wSize = window.getSize();
+        sprite.setScale(static_cast<float> (wSize.x) / tSize.x, static_cast<float> (wSize.y) / tSize.y);
+
     }
 
-    Planet draw_planet;
-
-    //пїЅпїЅпїЅпїЅ
-    while (window1.isOpen())
+    void event_processing()
     {
-        sf::Event event;
-        while (window1.pollEvent(event))
+        while (window.isOpen())
         {
-            if (event.type == sf::Event::Closed) window1.close();
-            if (event.type = sf::Event::MouseButtonPressed)
+            sf::Event event;
+            while (window.pollEvent(event))
             {
-                if (event.mouseButton.button == sf::Mouse::Left)
+                if (event.type == sf::Event::Closed) window.close();
+                if (event.type == sf::Event::MouseButtonPressed)
                 {
-                    for (auto& i : transition)
+                    if (event.mouseButton.button == sf::Mouse::Left)
                     {
-                        if (i.x0 <= event.mouseButton.x && event.mouseButton.x <= i.x && i.y0 <= event.mouseButton.y && event.mouseButton.y <= i.y)
+                        for (auto& i : transition)
                         {
-                            draw_planet = i.planet;
-                            window1.close();
+                            if (i.x0 <= event.mouseButton.x && event.mouseButton.x <= i.x && i.y0 <= event.mouseButton.y && event.mouseButton.y <= i.y)
+                            {
+                                window.close();
+                            }
                         }
                     }
                 }
             }
-        }
-        window1.clear();
-        window1.draw(sprite);
-        window1.draw(rect);
-        window1.draw(text);
+            window.clear();
+            window.draw(sprite);
+            window.draw(rect);
+            window.draw(text);
 
-        float startY = 100 + bounds.height + 40;
-        for (unsigned int i = 0; i < planets.size(); i++)
-        {
-            window1.draw(planets[i]);
+            float startY = 100 + bounds.height + 40;
+            for (unsigned int i = 0; i < button.size(); i++)
+            {
+                window.draw(button[i]);
+            }
+            window.display();
         }
-        window1.display();
     }
+};
 
-    //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
-    sf::RenderWindow window2(sf::VideoMode(sf::VideoMode::getDesktopMode().width, sf::VideoMode::getDesktopMode().height), L"пїЅпїЅпїЅпїЅпїЅпїЅ");
-    while (window2.isOpen())
+class General_window : public Window
+{
+private:
+    sf::RenderWindow window{ sf::VideoMode(x_window, y_window), L"Визуализация полета астероидов" };
+public:
+    General_window() {}
+    ~General_window() {}
+ 
+    void event_processing(vector<Graphic_object*>& bodies)
     {
-        sf::Event event;
-        while (window2.pollEvent(event))
+        while (window.isOpen())
         {
-            if (event.type == sf::Event::Closed)
-                window2.close();
+            sf::Event event;
+            while (window.pollEvent(event))
+            {
+                if (event.type == sf::Event::Closed)
+                    window.close();
+            }
+
+            window.clear();
+            for (auto x : bodies)
+            {
+                x->Draw(window);
+                x->Update();
+            }
+            window.display();
         }
-
-        window2.clear();
-
-        sun.Draw(window2);
-        //earth.Draw(window2);
-        //mars.Draw(window2);
-        //earth.Update();
-        //mars.Update();
-        draw_planet.Draw(window2);
-        draw_planet.Update();
-        
-        window2.display();
     }
-    return 0;
+};
+int main()
+{
+    std::ifstream file1("C:\\Users\\1\\Desktop\\project\\space_orbits\\data\\earth_orbit.csv");
+    if (!file1.is_open()) { std::cout << "Не удалось открыть file1"; }
+
+    std::ifstream file2("C:\\Users\\1\\Desktop\\project\\space_orbits\\data\\mars_orbit.csv");
+    if (!file2.is_open()) { std::cout << "Не удалось открыть file2"; }
+    
+    vector<Graphic_object*> bodies;
+
+    Earth earth(file1);
+    bodies.push_back(&earth);
+    Mars mars(file2);
+    bodies.push_back(&mars);
+    Sun sun;
+    bodies.push_back(&sun);
+
+    
+
+    //Меню
+    Menu menu;
+    menu.event_processing();
+
+    //Основное окно
+    General_window g_window;
+    g_window.event_processing(bodies);
+
 }
